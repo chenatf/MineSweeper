@@ -39,7 +39,7 @@ namespace Minesweep.Model
         public static Tile Mine => new Tile(MINE_STATUS);
         public static Tile Create(int minesInProximity)
         {
-            if(minesInProximity > MAX_PROXIMITY_COUNT || minesInProximity <= 0)
+            if(minesInProximity > MAX_PROXIMITY_COUNT || minesInProximity < 0)
             {
                 throw new ArgumentException();
             }

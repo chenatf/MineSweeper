@@ -12,7 +12,7 @@ namespace Minesweep.Model
         public int Rows { get; }
         public int Mines { get; }
 
-        public static int MIN_DIM => 10;
+        public static int MIN_DIM => 9;
 
         public Difficulty(int columns, int rows, int mines)
         {
@@ -37,7 +37,7 @@ namespace Minesweep.Model
             Mines = mines;
         }
     }
-    internal static class DifficultySettings
+    public static class DifficultySettings
     {
         private static readonly Difficulty _Beginner =
             new Difficulty(9, 9, 10);
