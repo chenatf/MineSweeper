@@ -4,9 +4,43 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Minesweep"
+        xmlns:trheading="clr-namespace:System.Windows.Threading;assembly=WindowsBase"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
+        Title="MineSweep" Height="350" Width="525">
+    <DockPanel LastChildFill="True">
+        <!-- Top Menu -->
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_Game">
+                <MenuItem Header="_New"/>
+                <Separator/>
+                <!-- Difficulty -->
+                <MenuItem Name="Menu_Game_Beginner" Header="Beginner" local:MenuItemGroupNameExtension.GroupName="Difficulty" IsChecked="True" Click="MenuSetDificulty"/>
+                <MenuItem Name="Menu_Game_Intermediate" Header="Intermediate" local:MenuItemGroupNameExtension.GroupName="Difficulty" IsCheckable="True"/>
+                <MenuItem Name="Menu_Game_Expert" Header="Expert" local:MenuItemGroupNameExtension.GroupName="Difficulty" IsCheckable="True"/>
+                <MenuItem Name="Menu_Game_Custom" Header="Custom" local:MenuItemGroupNameExtension.GroupName="Difficulty" IsCheckable="True"/>
+                <Separator/>
+                <MenuItem Header="Exit" Click="Exit_Click"/>
+            </MenuItem>
+            
+            <MenuItem Header="About">
+
+            </MenuItem>
+        </Menu>
         
-    </Grid>
+        <!-- Status Bar -->
+        <Grid DockPanel.Dock="Top" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
+            <Button HorizontalAlignment="Center">Restart</Button>
+            <Border HorizontalAlignment="Left" BorderBrush="Black" BorderThickness="1">
+                <TextBlock/>
+            </Border>
+            <Border HorizontalAlignment="Right" BorderBrush="Black" BorderThickness="1">
+                <TextBlock Text="{Binding Mines, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}, StringFormat=\{0:D3\}}" />
+            </Border>
+        </Grid>
+        
+        <!-- Mine Field -->
+        <Grid>
+            
+        </Grid>
+    </DockPanel>
 </Window>
