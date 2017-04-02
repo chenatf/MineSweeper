@@ -52,7 +52,11 @@
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="Helper.fs" />
+    <Compile Include="Point.fs" />
     <Compile Include="Cell.fs" />
+    <Compile Include="CellGenerator.fs" />
+    <Compile Include="CellGeneraterCS.fs" />
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
