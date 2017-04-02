@@ -57,5 +57,11 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MineSweep.Model\MineSweep.Model.fsproj">
+      <Project>{31d36282-b2a0-43f7-b03f-3c4f6299a08b}</Project>
+      <Name>MineSweep.Model</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
