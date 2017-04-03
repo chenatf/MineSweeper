@@ -7,11 +7,16 @@ namespace MineSweep.Model
 {
     [DataContract]
     public sealed class Mine:
-        Cell
+        Cell, IEquatable<Mine>
     {
         public Mine(int x, int y) :
             base(x, y)
         {
+        }
+
+        public bool Equals(Mine other)
+        {
+            return Equals((Cell)other);
         }
     }
 }

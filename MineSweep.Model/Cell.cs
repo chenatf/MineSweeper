@@ -7,7 +7,8 @@ namespace MineSweep.Model
 {
     [DataContract]
     [KnownType(typeof(EmptyCell)), KnownType(typeof(Mine)), KnownType(typeof(Proximity))]
-    public abstract class Cell
+    public abstract class Cell:
+        IEquatable<Cell>
     {
         #region Field
         [DataMember(Name = "X")]
@@ -30,5 +31,39 @@ namespace MineSweep.Model
             _Y = y;
         }
         #endregion
+        public override bool Equals(object obj)
+        {
+            var rhs = obj as Cell;
+            if(rhs == null)
+            {
+                return false;
+            }
+            else
+            {
+                return Equals(rhs);
+            }
+        }
+
+        public override int GetHashCode()
+        {
+            var hash = 17;
+            hash = CombineHash(hash, X.GetHashCode());
+            hash = CombineHash(hash, Y.GetHashCode());
+            return hash;
+        }
+
+        public bool Equals(Cell other)
+        {
+            return X == other.X &&
+                   Y == other.Y;
+        }
+
+        protected static int CombineHash(int hash1, int hash2)
+        {
+            unchecked
+            {
+                return hash1 * 23 + hash2;
+            }
+        }
     }
 }

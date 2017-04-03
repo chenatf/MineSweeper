@@ -7,10 +7,15 @@ namespace MineSweep.Model
 {
     [DataContract]
     public sealed class EmptyCell:
-        Cell
+        Cell, IEquatable<EmptyCell>
     {
         public EmptyCell(int x, int y) : base(x, y)
         {
+        }
+
+        public bool Equals(EmptyCell other)
+        {
+            return Equals((Cell)other);
         }
     }
 }

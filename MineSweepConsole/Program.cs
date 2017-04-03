@@ -5,72 +5,108 @@ using System.Text;
 using System.Threading.Tasks;
 using MineSweep.Model;
 using System.Collections;
+using System.IO;
 
 namespace MineSweepConsole
 {
+    sealed class BitArray2D
+    {
+        private readonly BitArray array;
+        public int Length1 { get; }
+        public int Length2 { get; }
+
+        public BitArray2D(int length1, int length2)
+        {
+            array = new BitArray(length1 * length2);
+            Length1 = length1;
+            Length2 = length2;
+        }
+
+        public bool this[int x, int y]
+        {
+            get
+            {
+                return array[x * Length2 + y];
+            }
+            set
+            {
+                array[x * Length2 + y] = value;
+            }
+        }
+    }
     class Program
     {
-        //private MineField field;
+        public const int CELL_IS_COVERED = -2;
+        private MineField _field;
+        private BitArray2D _mask;
 
-        //private BitArray mask;
+        public Program(int width, int height, int count)
+        {
+            _field = new MineField(width, height, count);
+            _mask = new BitArray2D(width, height);
+        }
 
-        //public Program()
-        //{
-        //    var difficulty = DifficultySettings.Intermediate;
-        //    field = new MineField(difficulty);
-        //    mask = new BitArray(difficulty.Rows * difficulty.Columns, false);
-        //}
+        public int this[int x, int y]
+        {
+            get
+            {
+                if(_mask[x, y])
+                {
+                    return _field[x, y];
+                }
+                else
+                {
+                    return CELL_IS_COVERED;
+                }
+            }
+        }
 
-        //public void Draw()
-        //{
-        //    for(int x = 0; x < field.Columns; ++x)
-        //    {
-        //        for(int y = 0; y < field.Rows; ++y)
-        //        {
-        //            if(!mask[x*field.Columns+y])
-        //            {
-        //                Console.Write("██");
-        //            }
-        //            else if(field[x, y].IsEmpty)
-        //            {
-        //                Console.Write("  ");
-        //            }
-        //            else if(field[x, y].IsMine)
-        //            {
-        //                Console.Write("►◄");
-        //            }
-        //            else
-        //            {
-        //                Console.Write($"{field[x, y].MinesInProximity:2}");
-        //            }
-        //        }
-        //        Console.WriteLine();
-        //    }
-        //}
+        public static string PrintCell(int cellValue)
+        {
+            switch(cellValue)
+            {
+            case CELL_IS_COVERED:
+                return "██";
+            case MineField.CELL_IS_MINE:
+                return "►◄";
+            case MineField.CELL_IS_EMPTY:
+                return "  ";
+            case int count:
+                return $"{count:D2}";
+            }
+        }
 
-        //public bool Open(int x, int y)
-        //{
-        //    mask[x * field.Columns + y] = true;
-        //    if(field[x, y].IsMine)
-        //    {
-        //        return false;
-        //    }
-        //    else
-        //    {
-        //        return true;
-        //    }
-        //}
+        public void Draw(TextWriter writer)
+        {
+            for(int i = 0; i < _field.Width; ++i)
+            {
+                for(int j = 0; j < _field.Height; ++j)
+                {
+                    writer.Write(PrintCell(this[i, j]));
+                }
+                writer.WriteLine();
+            }
+        }
+
+        public void Open(int x, int y)
+        {
+            if(!_mask[x, y])
+            {
+                _mask[x, y] = true;
+            }
+        }
 
         static void Main(string[] args)
         {
-            //var program = new Program();
-            //program.Draw();
-            //Console.WriteLine();
-            //program.field.Initialize(2, 4);
-            //program.Open(2, 4);
-            //program.Open(1, 3);
-            //program.Open(5, 7);
-            //program.Draw();
+            var program = new Program(9, 9, 10);
+            program.Draw(Console.Out);
+            Console.WriteLine();
+            program.Open(2, 4);
+            program.Open(1, 3);
+            program.Open(5, 7);
+            program.Open(2, 1);
+            program.Open(8, 0);
+            program.Draw(Console.Out);
         }
     }
 }
