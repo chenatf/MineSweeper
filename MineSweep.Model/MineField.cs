@@ -145,13 +145,13 @@ namespace MineSweep.Model
         {
             return count > 0;
         }
-        private bool IsValidIndex(int x, int y)
-        {
-            return x > 0 && y > 0 &&
-                   x < Width && y < Height;
-        }
         #endregion
         #region Methods
+        public bool IsValidIndex(int x, int y)
+        {
+            return x >= 0 && y >= 0 &&
+                   x < Width && y < Height;
+        }
         public bool ContainsKey((int, int) key)
         {
             return IsValidIndex(key.Item1, key.Item2);
@@ -214,5 +214,30 @@ namespace MineSweep.Model
             return this.GetEnumerator();
         }
         #endregion
+
+        public override string ToString()
+        {
+            var builder = new StringBuilder();
+            for(int i = 0; i < Width; ++i)
+            {
+                for(int j = 0; j < Height; ++j)
+                {
+                    switch(_Cells[i, j])
+                    {
+                    case CELL_IS_EMPTY:
+                        builder.Append("  ");
+                        break;
+                    case CELL_IS_MINE:
+                        builder.Append("><");
+                        break;
+                    case int count:
+                        builder.Append($"{count:D2}");
+                        break;
+                    }
+                }
+                builder.AppendLine();
+            }
+            return builder.ToString();
+        }
     }
 }

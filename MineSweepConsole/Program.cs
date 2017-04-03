@@ -68,7 +68,7 @@ namespace MineSweepConsole
             case CELL_IS_COVERED:
                 return "██";
             case MineField.CELL_IS_MINE:
-                return "►◄";
+                return "**";
             case MineField.CELL_IS_EMPTY:
                 return "  ";
             case int count:
@@ -90,9 +90,22 @@ namespace MineSweepConsole
 
         public void Open(int x, int y)
         {
-            if(!_mask[x, y])
+            if(_field.IsValidIndex(x, y))
             {
-                _mask[x, y] = true;
+                if(!_mask[x, y])
+                {
+                    _mask[x, y] = true;
+                    if(_field[x, y] == MineField.CELL_IS_EMPTY)
+                    {
+                        for(int i = -1; i <= 1; ++i)
+                        {
+                            for(int j = -1; j <= 1; ++j)
+                            {
+                                Open(x + i, y + j);
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -107,6 +120,8 @@ namespace MineSweepConsole
             program.Open(2, 1);
             program.Open(8, 0);
             program.Draw(Console.Out);
+            //var field = new MineField(9, 9, 10);
+            //Console.WriteLine(field);
         }
     }
 }
