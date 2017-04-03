@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Runtime.Serialization;
+using System.Text;
 
 namespace MineSweep.Model
 {
     [DataContract]
-    public sealed class Mine:
+    public sealed class EmptyCell:
         Cell
     {
-        public Mine(int x, int y) :
-            base(x, y)
+        public EmptyCell(int x, int y) : base(x, y)
         {
         }
     }
