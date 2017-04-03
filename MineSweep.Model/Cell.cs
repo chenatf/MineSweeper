@@ -6,7 +6,8 @@ using System.Runtime.Serialization;
 namespace MineSweep.Model
 {
     [DataContract]
-    [KnownType(typeof(EmptyCell)), KnownType(typeof(Mine)), KnownType(typeof(Proximity))]
+    [KnownType(typeof(Empty)), KnownType(typeof(Mine))]
+    [KnownType(typeof(Proximity)), KnownType(typeof(Covered))]
     public abstract class Cell:
         IEquatable<Cell>
     {

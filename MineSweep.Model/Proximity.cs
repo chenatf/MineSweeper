@@ -22,17 +22,20 @@ namespace MineSweep.Model
             }
             _Count = count;
         }
+        public override bool Equals(object obj)
+        {
+            switch(obj)
+            {
+            case Proximity rhs:
+                return Equals(rhs);
+            default:
+                return false;
+            }
+        }
+
         public override int GetHashCode()
         {
             return CombineHash(base.GetHashCode(), Count.GetHashCode());
-        }
-        public override bool Equals(object obj)
-        {
-            var rhs = obj as Proximity;
-            if(rhs == null)
-                return false;
-            else
-                return Equals(rhs);
         }
 
         public bool Equals(Proximity other)

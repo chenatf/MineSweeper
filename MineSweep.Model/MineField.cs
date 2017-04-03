@@ -17,17 +17,17 @@ namespace MineSweep.Model
         private int[,] _Cells;
         #endregion 
         #region Properties
-        public int this[int x, int y] => _Cells[x, y];
-        public int Width => _Cells.GetLength(0);
-        public int Height => _Cells.GetLength(1);
+        public virtual int this[int x, int y] => _Cells[x, y];
+        public int Height => _Cells.GetLength(0);
+        public int Width => _Cells.GetLength(1);
         public int Count { get; }
 
         public IEnumerable<(int, int)> Keys
         {
             get
             {
-                for(int i = 0; i < Width; ++i)
-                    for(int j = 0; j < Height; ++j)
+                for(int i = 0; i < Height; ++i)
+                    for(int j = 0; j < Width; ++j)
                         yield return (i, j);
             }
         }
@@ -36,23 +36,11 @@ namespace MineSweep.Model
         {
             get
             {
-                for(int i = 0; i < Width; ++i)
+                for(int i = 0; i < Height; ++i)
                 {
-                    for(int j = 0; j < Height; ++j)
+                    for(int j = 0; j < Width; ++j)
                     {
-                        var value = _Cells[i, j];
-                        switch(value)
-                        {
-                        case CELL_IS_EMPTY:
-                            yield return new EmptyCell(i, j);
-                            break;
-                        case CELL_IS_MINE:
-                            yield return new Mine(i, j);
-                            break;
-                        case int count:
-                            yield return new Proximity(i, j, count);
-                            break;
-                        }
+                        yield return GetCell(i, j);
                     }
                 }
             }
@@ -63,32 +51,21 @@ namespace MineSweep.Model
             get
             {
                 var (x, y) = key;
-                if(!IsValidIndex(x, y))
-                    throw new KeyNotFoundException();
-                var value = _Cells[x, y];
-                switch(value)
-                {
-                case CELL_IS_EMPTY:
-                    return new EmptyCell(x, y);
-                case CELL_IS_MINE:
-                    return new Mine(x, y);
-                case int count:
-                    return new Proximity(x, y, count);
-                }
+                return GetCell(x, y);
             }
         }
         #endregion
         #region Ctor
-        public MineField(int width, int height, int count)
+        public MineField(int height, int width, int count)
         {
-            if(!IsValidBoundry(width, height)||
+            if(!IsValidBoundry(height, width)||
                !IsValidMineCount(count))
             {
                 throw new ArgumentException();
             }
             else
             {
-                _Cells = new int[width, height];
+                _Cells = new int[height, width];
                 Count = count;
                 GenerateMines();
             }
@@ -97,11 +74,11 @@ namespace MineSweep.Model
         #region Implements
         private void GenerateMines()
         {
-            var idxs = new List<(int, int)>(Width * Height);
+            var idxs = new List<(int, int)>(Height * Width);
             var rng = new Random();
-            for(int i = 0, x = 0; i < Width; ++i)
+            for(int i = 0, x = 0; i < Height; ++i)
             {
-                for(int j = 0; j < Height; ++j, ++x)
+                for(int j = 0; j < Width; ++j, ++x)
                 {
                     var idx = (i, j);
                     var y = rng.Next(x);
@@ -135,23 +112,38 @@ namespace MineSweep.Model
                 ++_Cells[x, y];
             }
         }
+        protected virtual Cell GetCell(int x, int y)
+        {
+            if(!IsValidIndex(x, y))
+                throw new KeyNotFoundException();
+            var value = _Cells[x, y];
+            switch(value)
+            {
+            case CELL_IS_EMPTY:
+                return new Empty(x, y);
+            case CELL_IS_MINE:
+                return new Mine(x, y);
+            case int count:
+                return new Proximity(x, y, count);
+            }
+        }
         #endregion
         #region Validaters
-        private static bool IsValidBoundry(int width, int height)
+        private static bool IsValidBoundry(int height, int width)
         {
-            return width > 0 && height > 0;
+            return height > 0 && width > 0;
         }
         private static bool IsValidMineCount(int count)
         {
             return count > 0;
         }
-        #endregion
-        #region Methods
         public bool IsValidIndex(int x, int y)
         {
             return x >= 0 && y >= 0 &&
-                   x < Width && y < Height;
+                   x < Height && y < Width;
         }
+        #endregion
+        #region Methods
         public bool ContainsKey((int, int) key)
         {
             return IsValidIndex(key.Item1, key.Item2);
@@ -165,46 +157,21 @@ namespace MineSweep.Model
                 value = null;
                 return false;
             }
-            var val = _Cells[x, y];
-            switch(val)
+            else
             {
-            case CELL_IS_EMPTY:
-                value = new EmptyCell(x, y);
-                return true;
-            case CELL_IS_MINE:
-                value = new Mine(x, y);
-                return true;
-            case int count:
-                value = new Proximity(x, y, count);
+                value =  GetCell(x, y);
                 return true;
             }
         }
 
         public IEnumerator<KeyValuePair<(int, int), Cell>> GetEnumerator()
         {
-            for(int i = 0; i < Width; ++i)
+            for(int i = 0; i < Height; ++i)
             {
-                for(int j = 0; j < Height; ++j)
+                for(int j = 0; j < Width; ++j)
                 {
-                    var value = _Cells[i, j];
-                    switch(value)
-                    {
-                    case CELL_IS_EMPTY:
-                        yield return new KeyValuePair<(int, int), Cell>(
-                            (i, j), new EmptyCell(i, j)
-                            );
-                        break;
-                    case CELL_IS_MINE:
-                        yield return new KeyValuePair<(int, int), Cell>(
-                        (i, j), new Mine(i, j)
-                        );
-                        break;
-                    case int count:
-                        yield return new KeyValuePair<(int, int), Cell>(
-                        (i, j), new Proximity(i, j, count)
-                        );
-                        break;
-                    }
+                    yield return new KeyValuePair<(int, int), Cell>(
+                        (i, j), GetCell(i, j));
                 }
             }
         }
@@ -214,30 +181,5 @@ namespace MineSweep.Model
             return this.GetEnumerator();
         }
         #endregion
-
-        public override string ToString()
-        {
-            var builder = new StringBuilder();
-            for(int i = 0; i < Width; ++i)
-            {
-                for(int j = 0; j < Height; ++j)
-                {
-                    switch(_Cells[i, j])
-                    {
-                    case CELL_IS_EMPTY:
-                        builder.Append("  ");
-                        break;
-                    case CELL_IS_MINE:
-                        builder.Append("><");
-                        break;
-                    case int count:
-                        builder.Append($"{count:D2}");
-                        break;
-                    }
-                }
-                builder.AppendLine();
-            }
-            return builder.ToString();
-        }
     }
 }

@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Runtime.Serialization;
+using System.Text;
 
 namespace MineSweep.Model
 {
     [DataContract]
-    public sealed class Mine:
-        Cell, IEquatable<Mine>
+    public sealed class Empty:
+        Cell, IEquatable<Empty>
     {
-        public Mine(int x, int y) :
-            base(x, y)
+        public Empty(int x, int y) : base(x, y)
         {
         }
 
@@ -18,7 +17,7 @@ namespace MineSweep.Model
         {
             switch(obj)
             {
-            case Mine rhs:
+            case Empty rhs:
                 return Equals(rhs);
             default:
                 return false;
@@ -30,9 +29,11 @@ namespace MineSweep.Model
             return base.GetHashCode();
         }
 
-        public bool Equals(Mine other)
+        public bool Equals(Empty other)
         {
-            return Equals((Cell)other);
+            return base.Equals(other);
         }
+
+
     }
 }
