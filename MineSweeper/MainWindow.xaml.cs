@@ -25,12 +25,11 @@ namespace MineSweeper
         public MainWindow()
         {
             InitializeComponent();
-            Game.Initialize(10, 10, 10);
         }
 
         private void StartGame(object sender, RoutedEventArgs e)
         {
-            Game.Initialize(10, 10, 10);
+            Game.Initialize(10, 10, 10, 4, 4);
         }
 
         private void Unexplored_Click(object sender, RoutedEventArgs e)

@@ -11,31 +11,34 @@
         <model:Game/>
     </Window.DataContext>
     <Window.Resources>
-        <DataTemplate x:Key="UnexploredCellTemplate">
-            <Button Grid.Row="{Binding X, Mode=OneTime}"
-                    Grid.Column="{Binding Y, Mode=OneTime}"
-                    Click="Unexplored_Click"/>
+        <DataTemplate x:Key="NormalGameCellTemplate"
+                      DataType="{x:Type model:Cell}">
+            <DataTemplate.Resources>
+                <DataTemplate x:Key="Unexplored"
+                              DataType="{x:Type model:Cell}">
+                    <Button Grid.Row="{Binding X}"
+                            Grid.Column="{Binding Y}"
+                            Click="Unexplored_Click"/>
+                </DataTemplate>
+                <DataTemplate x:Key="Explored">
+                    <TextBlock Grid.Row="{Binding X}"
+                               Grid.Column="{Binding Y}"
+                               Text="{Binding ProximalMineCount}"/>
+                </DataTemplate>
+            </DataTemplate.Resources>
+            <ContentControl Content="{Binding}">
+                <ContentControl.Style>
+                    <Style TargetType="{x:Type ContentControl}">
+                        <Setter Property="ContentTemplate" Value="{StaticResource Unexplored}"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding State}" Value="{x:Static model:CellState.Explored}">
+                                <Setter Property="ContentTemplate" Value="{StaticResource Explored}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ContentControl.Style>
+            </ContentControl>
         </DataTemplate>
-        <DataTemplate x:Key="ExploredCellTemplate">
-            <TextBlock Grid.Row="{Binding X, Mode=OneTime}"
-                       Grid.Column="{Binding Y, Mode=OneTime}"
-                       Text="{Binding ProximalMineCount, Mode=OneTime}"/>
-        </DataTemplate>
-        <DataTemplate x:Key="ExplodedMineTemplate">
-            
-        </DataTemplate>
-        <DataTemplate x:Key="MarkedAsMineTemplate">
-            
-        </DataTemplate>
-        <DataTemplate x:Key="MissedMineTemplate">
-            
-        </DataTemplate>
-        <local:MineFieldTemplateSelector x:Key="MineFieldTemplateSelector"
-                                         UnexploredCell="{StaticResource UnexploredCellTemplate}"
-                                         ExploredCell="{StaticResource ExplodedMineTemplate}"
-                                         MarkedAsMineCell="{StaticResource MarkedAsMineTemplate}"
-                                         ExplodedMineCell="{StaticResource ExplodedMineTemplate}"
-                                         MissedMineCell="{StaticResource MissedMineTemplate}"/>
     </Window.Resources>
     <DockPanel>
         <Menu DockPanel.Dock="Top">
@@ -61,7 +64,7 @@
         </DockPanel>
         <ItemsControl DockPanel.Dock="Bottom"
                       ItemsSource="{Binding Cells}"
-                      ItemTemplateSelector="{StaticResource MineFieldTemplateSelector}">
+                      ItemTemplate="{StaticResource NormalGameCellTemplate}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <UniformGrid Rows="{Binding Width}"
