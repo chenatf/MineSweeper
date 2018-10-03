@@ -15,37 +15,21 @@ namespace MineSweep.Model
         public event PropertyChangedEventHandler PropertyChanged;
         #pragma warning restore CS0067
 
-        public event EventHandler<MineHitEventArgs> GameOver;
+        public event EventHandler<ExplosionEventArgs> Exploded;
 
         public const double MAX_MINE_RATIO = 0.6;
 
-        protected static readonly Cell[,] EmptyMineField = new Cell[0, 0];
+        protected static readonly CellCollection EmptyMineField = new CellCollection();
 
-        protected Cell[,] _Cells { get; set; }
+        protected CellCollection _Cells { get; set; }
 
         protected int Version { get; set; }
 
-        public int Width => _Cells.GetLength(0);
+        public int Width { get; protected set; }
 
-        public int Height => _Cells.GetLength(1);
+        public int Height { get; protected set; }
 
-        [DependsOn(nameof(_Cells))]
-        public IEnumerable<IndexedCell> Cells
-        {
-            get
-            {
-                var version = Version;
-                for(var i = 0; i != Width; ++i)
-                {
-                    for(var j = 0; j != Height; ++j)
-                    {
-                        yield return 
-                            version == Version ? new IndexedCell(i, j, _Cells[i, j]) :
-                            throw new InvalidOperationException();
-                    }
-                }
-            }
-        }
+        public IEnumerable<Cell> Cells => _Cells;
 
         public int MineCount { get; protected set; }
 
@@ -60,7 +44,7 @@ namespace MineSweep.Model
         public static int CalculateMaxNumberOfMine(int width, int height) =>
             Convert.ToInt32(Math.Floor(width * height * MAX_MINE_RATIO));
 
-        public void Initialize(int width, int height, int mineCount)
+        public void Initialize(int width, int height, int mineCount, int firstClickX, int firstClickY)
         {
             const int isMine = -1;
             if(mineCount < 0 || mineCount > CalculateMaxNumberOfMine(width, height))
@@ -77,13 +61,15 @@ namespace MineSweep.Model
             for(var k = 0; k != mineCount; ++k)
             {
                 int x, y;
-                bool repeatedIndex;
+                bool notToBeMine;
                 do
                 {
                     x = rand.Next(width);
                     y = rand.Next(height);
-                    repeatedIndex = cellCounting[x, y] == isMine;
-                } while (repeatedIndex);
+                    notToBeMine = 
+                        cellCounting[x, y] == isMine ||
+                        (x == firstClickX && y == firstClickY);
+                } while (notToBeMine);
 
                 cellCounting[x, y] = isMine;
                 for(int i = -1; i <= 1; ++i)
@@ -100,7 +86,7 @@ namespace MineSweep.Model
                 }
             }
 
-            var cells = new Cell[width, height];
+            var cells = new CellCollection();
 
             for(var x = 0; x != width; ++x)
             {
@@ -108,29 +94,37 @@ namespace MineSweep.Model
                 {
                     var proximalCount = cellCounting[x, y];
                     var cellIsMine = proximalCount == isMine;
-                    proximalCount = cellIsMine ? 0 : proximalCount;
-                    cells[x, y] = new Cell(Convert.ToByte(proximalCount), cellIsMine);
+                    if(cellIsMine)
+                    {
+                        cells.Add(Cell.CreateMine(x, y));
+                    }
+                    else
+                    {
+                        cells.Add(Cell.CreateRegularCell(x, y, Convert.ToByte(proximalCount)));
+                    }
                 }
             }
 
             _Cells = cells;
             MineCount = mineCount;
+            Width = width;
+            Height = height;
             ++Version;
         }
 
         public void Explore(int x, int y)
         {
-            var cell = _Cells[x, y];
+            var cell = _Cells[(x, y)];
             cell.State = Explored;
             if(cell.IsMine)
             {
-                OnGameOver(x, y);
+                OnExploded(x, y);
             }
         }
 
         public void MarkAsMine(int x, int y)
         {
-            var cell = _Cells[x, y];
+            var cell = _Cells[(x, y)];
             if(cell.State == Explored)
             {
                 var ex = new InvalidOperationException("Cell is already explored");
@@ -143,9 +137,9 @@ namespace MineSweep.Model
             ++MarkedMineCount;
         }
 
-        protected virtual void OnGameOver(int x, int y)
+        protected virtual void OnExploded(int x, int y)
         {
-            GameOver?.Invoke(this, new MineHitEventArgs(x, y));
+            Exploded?.Invoke(this, new ExplosionEventArgs(x, y));
         }
     }
 }

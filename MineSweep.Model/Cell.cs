@@ -12,17 +12,33 @@ namespace MineSweep.Model
         public event PropertyChangedEventHandler PropertyChanged;
         #pragma warning restore CS0067
 
+        public int X { get; }
+
+        public int Y { get; }
+
         public CellState State { get; set; }
 
         public bool IsMine { get; }
 
         public byte ProximalMineCount { get; }
 
-        public Cell(byte proximalMineCount, bool isMine = false)
+        protected Cell(int x, int y, byte proximalMineCount, bool isMine)
         {
+            X = x;
+            Y = y;
             State = CellState.Unexplored;
             ProximalMineCount = proximalMineCount;
             IsMine = isMine;
+        }
+
+        public static Cell CreateMine(int x, int y)
+        {
+            return new Cell(x, y, 0, true);
+        }
+
+        public static Cell CreateRegularCell(int x, int y, byte proximalCount)
+        {
+            return new Cell(x, y, proximalCount, false);
         }
     }
 }

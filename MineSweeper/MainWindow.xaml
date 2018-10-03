@@ -19,7 +19,7 @@
         <DataTemplate x:Key="ExploredCellTemplate">
             <TextBlock Grid.Row="{Binding X, Mode=OneTime}"
                        Grid.Column="{Binding Y, Mode=OneTime}"
-                       Text="{Binding Cells.ProximalMineCount, Mode=OneTime}"/>
+                       Text="{Binding ProximalMineCount, Mode=OneTime}"/>
         </DataTemplate>
         <DataTemplate x:Key="ExplodedMineTemplate">
             

@@ -4,17 +4,17 @@ using System.Text;
 
 namespace MineSweep.Model
 {
-    public sealed class IndexedCell
+    public class ExplosionEventArgs:
+        EventArgs
     {
         public int X { get; }
-        public int Y { get; }
-        public Cell Cell { get; }
 
-        public IndexedCell(int x, int y, Cell cell)
+        public int Y { get; }
+
+        public ExplosionEventArgs(int x, int y)
         {
             X = x;
             Y = y;
-            Cell = cell;
         }
     }
 }
