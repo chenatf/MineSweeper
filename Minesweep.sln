@@ -5,7 +5,9 @@ VisualStudioVersion = 15.0.26228.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MineSweepConsole", "MineSweepConsole\MineSweepConsole.csproj", "{ABD6EF98-5D0B-4E54-A668-CC4850121452}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MineSweep.Model", "MineSweep.Model\MineSweep.Model.csproj", "{1ECD7F8E-444A-4433-ACD7-98F9818F394B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineSweep.Model", "MineSweep.Model\MineSweep.Model.csproj", "{1ECD7F8E-444A-4433-ACD7-98F9818F394B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MineSweeper", "MineSweeper\MineSweeper.csproj", "{1F9C72F9-0D06-413A-971F-39F8259DC60F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,8 +23,15 @@ Global
 		{1ECD7F8E-444A-4433-ACD7-98F9818F394B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1ECD7F8E-444A-4433-ACD7-98F9818F394B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1ECD7F8E-444A-4433-ACD7-98F9818F394B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F9C72F9-0D06-413A-971F-39F8259DC60F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F9C72F9-0D06-413A-971F-39F8259DC60F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F9C72F9-0D06-413A-971F-39F8259DC60F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F9C72F9-0D06-413A-971F-39F8259DC60F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {598C3650-3644-4BDA-9762-59869BD2353A}
 	EndGlobalSection
 EndGlobal
