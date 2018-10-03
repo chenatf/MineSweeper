@@ -20,9 +20,9 @@ namespace MineSweep.Model
 
         public bool IsMine { get; }
 
-        public byte ProximalMineCount { get; }
+        public int ProximalMineCount { get; }
 
-        protected Cell(int x, int y, byte proximalMineCount, bool isMine)
+        protected Cell(int x, int y, int proximalMineCount, bool isMine)
         {
             X = x;
             Y = y;
@@ -33,10 +33,10 @@ namespace MineSweep.Model
 
         public static Cell CreateMine(int x, int y)
         {
-            return new Cell(x, y, 0, true);
+            return new Cell(x, y, -1, true);
         }
 
-        public static Cell CreateRegularCell(int x, int y, byte proximalCount)
+        public static Cell CreateRegularCell(int x, int y, int proximalCount)
         {
             return new Cell(x, y, proximalCount, false);
         }

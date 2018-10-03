@@ -21,7 +21,7 @@ namespace MineSweep.Model
 
         protected static readonly CellCollection EmptyMineField = new CellCollection();
 
-        protected CellCollection _Cells { get; set; }
+        protected CellCollection CellData { get; set; }
 
         protected int Version { get; set; }
 
@@ -29,7 +29,7 @@ namespace MineSweep.Model
 
         public int Height { get; protected set; }
 
-        public IEnumerable<Cell> Cells => _Cells;
+        public IEnumerable<Cell> Cells => CellData;
 
         public int MineCount { get; protected set; }
 
@@ -38,7 +38,7 @@ namespace MineSweep.Model
         public Game()
         {
             Version = default(int);
-            _Cells = EmptyMineField;
+            CellData = EmptyMineField;
         }
 
         public static int CalculateMaxNumberOfMine(int width, int height) =>
@@ -53,8 +53,8 @@ namespace MineSweep.Model
             }
 
             bool CheckIndex(int x, int y) =>
-                x > 0 && x < width &&
-                y > 0 && y < height;
+                x >= 0 && x < width &&
+                y >= 0 && y < height;
 
             var cellCounting = new int[width, height];
             var rand = new Random();
@@ -72,17 +72,9 @@ namespace MineSweep.Model
                 } while (notToBeMine);
 
                 cellCounting[x, y] = isMine;
-                for(int i = -1; i <= 1; ++i)
+                foreach(var (x1, y1) in GetSurroundingCellsOf(x, y, (i, j) => CheckIndex(i, j) && cellCounting[i, j] != isMine))
                 {
-                    var x1 = x + i;
-                    for (int j = -1; j <= 1; ++j)
-                    {
-                        var y1 = y + j;
-                        if(CheckIndex(x1, y1) && cellCounting[x1, y1] != isMine)
-                        {
-                            ++cellCounting[x1, y1];
-                        }
-                    }
+                    ++cellCounting[x1, y1];
                 }
             }
 
@@ -100,31 +92,44 @@ namespace MineSweep.Model
                     }
                     else
                     {
-                        cells.Add(Cell.CreateRegularCell(x, y, Convert.ToByte(proximalCount)));
+                        cells.Add(Cell.CreateRegularCell(x, y, proximalCount));
                     }
                 }
             }
 
-            _Cells = cells;
+            CellData = cells;
             MineCount = mineCount;
             Width = width;
             Height = height;
             ++Version;
+            Explore(firstClickX, firstClickY);
         }
 
         public void Explore(int x, int y)
         {
-            var cell = _Cells[(x, y)];
+            var cell = CellData[(x, y)];
+            if(cell.State == Explored)
+            {
+                return;
+            }
             cell.State = Explored;
             if(cell.IsMine)
             {
                 OnExploded(x, y);
+                return;
+            }
+            else if (cell.ProximalMineCount == 0)
+            {
+                foreach (var (x1, y1) in GetSurroundingCellsOf(x, y))
+                {
+                    Explore(x1, y1);
+                } 
             }
         }
 
         public void MarkAsMine(int x, int y)
         {
-            var cell = _Cells[(x, y)];
+            var cell = CellData[(x, y)];
             if(cell.State == Explored)
             {
                 var ex = new InvalidOperationException("Cell is already explored");
@@ -136,6 +141,31 @@ namespace MineSweep.Model
             cell.State = MarkedAsMine;
             ++MarkedMineCount;
         }
+
+        protected IEnumerable<(int, int)> GetSurroundingCellsOf(int x, int y, Func<int, int, bool> IndexCondition)
+        {
+
+            for(int i = -1; i <=1; ++i)
+            {
+                var x1 = x + i;
+                for(int j = -1; j <= 1; ++j)
+                {
+                    var y1 = y + j;
+                    if(IndexCondition(x1, y1))
+                    {
+                        yield return (x1, y1);
+                    }
+                }
+            }
+
+        }
+
+        protected IEnumerable<(int, int)> GetSurroundingCellsOf(int x, int y) =>
+            GetSurroundingCellsOf(x, y, CheckIndex);
+
+        protected bool CheckIndex(int i, int j) =>
+            i >= 0 && i < Width &&
+            j >= 0 && j < Height;
 
         protected virtual void OnExploded(int x, int y)
         {
